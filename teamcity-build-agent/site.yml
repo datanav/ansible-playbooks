@@ -36,6 +36,12 @@
           - virtualenv
           - python3-setuptools
           - libffi-dev
+          - tdsodbc
+          - unixodbc
+          - unixodbc-dev
+          - freetds-common
+          - freetds-bin
+          - freetds-dev
         state: latest
         update_cache: true
 
