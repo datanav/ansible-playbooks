@@ -1,0 +1,27 @@
+# https://www.jetbrains.com/help/teamcity/setting-up-and-running-additional-build-agents.html#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderLinux
+
+[Unit]
+Description="TeamCity Agent {{ teamcity_single_agent_name }}"
+After=network.target
+
+[Service]
+Type=simple
+
+# Use XDummy server on linux systems
+Environment="DISPLAY=:77"
+
+# Support agent upgrade as the main process starts a child and exits then
+RemainAfterExit=yes
+# Support agent upgrade as the main process gets SIGTERM during upgrade and that maps to exit code 143
+SuccessExitStatus=0 143
+
+User={{ teamcity_build_username }}
+SyslogIdentifier={{ teamcity_single_agent_name }}
+ExecStart={{ teamcity_single_agent_install_dir }}/bin/agent.sh run
+ExecStop={{ teamcity_single_agent_install_dir }}/bin/agent.sh stop
+
+RestartSec=5
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

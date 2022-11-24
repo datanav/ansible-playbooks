@@ -1,0 +1,151 @@
+# Ansible playbook for configuring a build agent box.
+
+- name: Update build agent
+  hosts: "{{ host|default('localhost') }}"
+  become: true
+
+  vars_prompt:
+    - name: custom_teamcity_single_agent_name
+      prompt: What is the teamcity agent name?
+      private: false
+
+  tasks:
+    - name: Run the equivalent of "apt-get update" as a separate step
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Allow the sesam user to run sudo without being prompted for a password
+      community.general.sudoers:
+        name: sesam-password-less
+        state: present
+        user: sesam
+        nopassword: true
+        commands: ALL
+
+    - name: apt install various mudules
+      ansible.builtin.apt:
+        pkg:
+          - curl
+          - net-tools
+          - default-jre
+          - git
+          - apt-transport-https
+          - ca-certificates
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+          - libffi-dev
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+    - name: Install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+    - name: Install docker-compose
+      apt:
+        name: docker-compose
+        state: latest
+        update_cache: true
+
+    #- name: Install Docker Module for Python
+    #  pip:
+    #    name: docker
+
+    - name: adding user 'sesam' to group 'docker'
+      user:
+        name: sesam
+        groups: docker
+        append: yes
+
+    - name: Set soft nofile limit
+      community.general.pam_limits:
+        domain: '*'
+        limit_type: soft
+        limit_item: nofile
+        value: "65535"
+
+    - name: Set hard nofile limit
+      community.general.pam_limits:
+        domain: '*'
+        limit_type: hard
+        limit_item: nofile
+        value: "65535"
+
+    - name: configure pam
+      lineinfile:
+        create=true dest=/etc/pam.d/common-session
+        line="session required pam_limits.so"
+
+    - name: make sure we can open enough files
+      lineinfile:
+        dest=/etc/systemd/system.conf
+        regexp="DefaultLimitNOFILE"
+        line="DefaultLimitNOFILE=65535"
+        state=present
+
+    - name: set fs.file-max
+      lineinfile:
+        create=true dest=/etc/sysctl.d/60-file-max.conf
+        line="fs.file-max = 65535"
+
+    - ansible.posix.sysctl:
+        name: fs.inotify.max_user_watches
+        value: '524288'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - ansible.posix.sysctl:
+        name: fs.inotify.max_user_instances
+        value: '512'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - name: Add kind-registry to the /etc/hosts file
+      lineinfile:
+        dest=/etc/hosts
+        line="127.0.0.1 kind-registry"
+
+    - name: ensure github.com is a known host
+      lineinfile:
+        dest: /home/sesam/.ssh/known_hosts
+        create: yes
+        state: present
+        line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+        regexp: "^github\\.com"
+
+    - name: Create the /sesam/venvs directory
+      ansible.builtin.file:
+        path: /sesam/venvs
+        state: directory
+        mode: '0755'
+        owner: sesam
+        group: sesam
+
+    - name: Create the /sesam/cache directory
+      ansible.builtin.file:
+        path: /sesam/cache
+        state: directory
+        mode: '0755'
+        owner: sesam
+        group: sesam
+
+  roles:
+    - role: ccdc.teamcity_agent
+      vars:
+        teamcity_server_url: 'http://100.71.200.78:8111'
+        teamcity_build_username: 'sesam'
+        teamcity_number_of_agents: 1
+

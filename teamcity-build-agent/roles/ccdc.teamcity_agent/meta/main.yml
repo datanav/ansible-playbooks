@@ -1,0 +1,32 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: teamcity_agent
+  namespace: ccdc
+  author: rockdreamer
+  description: TeamCity agent setup (multiple agents per machine).
+  company: The Cambridge Crystallographic Data Centre
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: MacOSX
+      versions:
+        - all
+    - name: Windows
+      versions:
+        - all
+  galaxy_tags:
+    - system
