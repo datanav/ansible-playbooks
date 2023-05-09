@@ -16,3 +16,4 @@ Example: To install the playbook on the "performance-test-agent2" box, ssh to th
 
     sudo ansible-playbook site.yml --extra-vars "custom_teamcity_single_agent_name=performance-test-agent2"
 
+Machine needs to be rebooted after ansible playbook is installed.
