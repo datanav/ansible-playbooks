@@ -9,6 +9,13 @@
       prompt: What is the teamcity agent name?
       private: false
 
+  pre_tasks:
+    - command: lsb_release -cs
+      register: lsb_release_codename_result
+
+    - set_fact:
+        lsb_release_codename: '{{lsb_release_codename_result.stdout}}'
+
   tasks:
     - name: Run the equivalent of "apt-get update" as a separate step
       ansible.builtin.apt:
@@ -51,7 +58,7 @@
         state: present
     - name: Add Docker Repository
       apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        repo: deb https://download.docker.com/linux/ubuntu {{lsb_release_codename}} stable
         state: present
     - name: Install docker-ce
       apt:
