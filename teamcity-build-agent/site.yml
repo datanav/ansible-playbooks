@@ -126,6 +126,13 @@
         state: present
         reload: yes
 
+    - ansible.posix.sysctl:
+        name: fs.inotify.max_queued_events
+        value: '65536'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
     - name: Add kind-registry to the /etc/hosts file
       lineinfile:
         dest=/etc/hosts
