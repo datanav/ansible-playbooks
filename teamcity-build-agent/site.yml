@@ -86,14 +86,14 @@
         domain: '*'
         limit_type: soft
         limit_item: nofile
-        value: "65535"
+        value: "262140"
 
     - name: Set hard nofile limit
       community.general.pam_limits:
         domain: '*'
         limit_type: hard
         limit_item: nofile
-        value: "65535"
+        value: "262140"
 
     - name: configure pam
       lineinfile:
@@ -104,24 +104,31 @@
       lineinfile:
         dest=/etc/systemd/system.conf
         regexp="DefaultLimitNOFILE"
-        line="DefaultLimitNOFILE=65535"
+        line="DefaultLimitNOFILE=262140"
         state=present
 
     - name: set fs.file-max
       lineinfile:
         create=true dest=/etc/sysctl.d/60-file-max.conf
-        line="fs.file-max = 65535"
+        line="fs.file-max = 262140"
 
     - ansible.posix.sysctl:
         name: fs.inotify.max_user_watches
-        value: '524288'
+        value: '2097152'
         sysctl_set: yes
         state: present
         reload: yes
 
     - ansible.posix.sysctl:
         name: fs.inotify.max_user_instances
-        value: '512'
+        value: '2048'
+        sysctl_set: yes
+        state: present
+        reload: yes
+
+    - ansible.posix.sysctl:
+        name: fs.inotify.max_queued_events
+        value: '65536'
         sysctl_set: yes
         state: present
         reload: yes
