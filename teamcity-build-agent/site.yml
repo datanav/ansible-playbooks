@@ -49,6 +49,7 @@
           - freetds-common
           - freetds-bin
           - freetds-dev
+          - parallel
         state: latest
         update_cache: true
 
