@@ -16,4 +16,6 @@ Example: To install the playbook on the "performance-test-agent2" box, ssh to th
 
     sudo ansible-playbook site.yml  --extra-vars '{"teamcity_agents":[{"teamcity_agent_name": "performance-test-agent2"}]}'
 
+NOTE: We've seen that recent playbooks have caused collisions for the agent, so it's worth considering changing the authorization token before running the playbook. See the `teamcity/sesam-build-agent-XX/conf/buildAgent.properties` file on the agent.
+
 Machine needs to be rebooted after ansible playbook is installed.
