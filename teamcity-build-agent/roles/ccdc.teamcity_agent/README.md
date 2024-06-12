@@ -1,8 +1,3 @@
-SESAM note: we needed our own copy of this ansible role, since we have tweaked it by adding a
-  "custom_teamcity_single_agent_name" variable to be able to specify the agent name (it ended up as
-  "localhost-01" by default).
-
-
 # Ansible Role: Set up TeamCity agents
 
 Install and configure a number of TeamCity agents
@@ -32,6 +27,17 @@ None.
 ## Example Playbook
 
     - hosts: all
+      vars:
+        homebrew_prefix: '/opt/homebrew'
+      roles:
+        - ccdc.teamcity_agent
+
+## Example Playbook with specific java version
+
+    - hosts: all
+      vars:
+        homebrew_prefix: '/opt/homebrew'
+        java_version: '18'
       roles:
         - ccdc.teamcity_agent
 
