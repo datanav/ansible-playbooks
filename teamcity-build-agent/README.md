@@ -14,6 +14,6 @@ existing build agent, or by running "docker login" for the "sesamci" user.
 Example: To install the playbook on the "performance-test-agent2" box, ssh to the "performance-test-agent2" box 
          go to this folder and run the following command:
 
-    sudo ansible-playbook site.yml --extra-vars "custom_teamcity_single_agent_name=performance-test-agent2"
+    sudo ansible-playbook site.yml  --extra-vars '{"teamcity_agents":[{"teamcity_agent_name": "performance-test-agent2"}]}'
 
 Machine needs to be rebooted after ansible playbook is installed.
