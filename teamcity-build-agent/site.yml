@@ -4,11 +4,6 @@
   hosts: "{{ host|default('localhost') }}"
   become: true
 
-  vars_prompt:
-    - name: custom_teamcity_single_agent_name
-      prompt: What is the teamcity agent name?
-      private: false
-
   pre_tasks:
     - command: lsb_release -cs
       register: lsb_release_codename_result
@@ -172,4 +167,3 @@
         teamcity_server_url: 'http://100.71.200.78:8111'
         teamcity_build_username: 'sesam'
         teamcity_number_of_agents: 1
-
