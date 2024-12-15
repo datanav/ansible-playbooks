@@ -85,14 +85,14 @@
         domain: '*'
         limit_type: soft
         limit_item: nofile
-        value: "262140"
+        value: "524280"
 
     - name: Set hard nofile limit
       community.general.pam_limits:
         domain: '*'
         limit_type: hard
         limit_item: nofile
-        value: "262140"
+        value: "524280"
 
     - name: configure pam
       lineinfile:
@@ -103,13 +103,13 @@
       lineinfile:
         dest=/etc/systemd/system.conf
         regexp="DefaultLimitNOFILE"
-        line="DefaultLimitNOFILE=262140"
+        line="DefaultLimitNOFILE=524280"
         state=present
 
     - name: set fs.file-max
       lineinfile:
         create=true dest=/etc/sysctl.d/60-file-max.conf
-        line="fs.file-max = 262140"
+        line="fs.file-max = 524280"
 
     - ansible.posix.sysctl:
         name: fs.inotify.max_user_watches
