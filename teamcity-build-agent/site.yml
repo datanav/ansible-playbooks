@@ -167,3 +167,4 @@
         teamcity_server_url: 'http://100.71.200.78:8111'
         teamcity_build_username: 'sesam'
         teamcity_number_of_agents: 1
+        java_version: '21'
